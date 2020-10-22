@@ -130,14 +130,14 @@ pub fn check_password(password: &Password) -> Result<bool, CheckpwnError> {
 
     if api::search_in_range(&pass_body, &password.hash) {
         if request_status == 200 {
-            return Ok(true);
+            Ok(true)
         } else if request_status == 404 {
-            return Ok(false);
+            Ok(false)
         } else {
-            return Err(CheckpwnError::StatusCode);
+            Err(CheckpwnError::StatusCode)
         }
     } else {
-        return Ok(false);
+        Ok(false)
     }
 }
 #[test]

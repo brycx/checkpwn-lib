@@ -86,22 +86,17 @@ pub fn evaluate_acc_breach_statuscodes(
     paste_stat: u16,
 ) -> Result<bool, CheckpwnError> {
     match (acc_stat, paste_stat) {
-        (401, 401) => return Err(CheckpwnError::InvalidApiKey),
-        (404, 404) => return Ok(false),
+        (401, 401) => Err(CheckpwnError::InvalidApiKey),
+        (404, 404) => Ok(false),
         // BadRequest allowed here because the account API lets you search for usernames
         // and the paste API will return BadRequest on those
-        (404, 400) => return Ok(false),
-        (400, 400) => return Err(CheckpwnError::BadResponse),
+        (404, 400) => Ok(false),
+        (400, 400) => Err(CheckpwnError::BadResponse),
         // Since the account API both takes username and emails and situation where BadRequest
         // and NotFound are returned should never occur.
-        (400, 404) => return Err(CheckpwnError::BadResponse),
-        (400, 200) => return Err(CheckpwnError::BadResponse),
-        _ => {
-            //debug_assert!(acc_stat == 200);
-            //debug_assert!(paste_stat == 200);
-
-            return Ok(true);
-        }
+        (400, 404) => Err(CheckpwnError::BadResponse),
+        (400, 200) => Err(CheckpwnError::BadResponse),
+        _ => Ok(true),
     }
 }
 
