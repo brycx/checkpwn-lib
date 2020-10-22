@@ -20,10 +20,18 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+//! # Usage:
+//! ```rust
+//! use checkpwn_lib::{Password, check_password, check_account, CheckpwnError};
+//!
+//! let password = Password::new("qwerty")?;
+//! check_password(&password);
 //!
 //!
+//! check_account("your_account", "your_api_key");
 //!
-
+//! # Ok::<(), CheckpwnError>(())
+//! ```
 #![forbid(unsafe_code)]
 #![deny(clippy::mem_forget)]
 #![warn(
@@ -41,12 +49,12 @@ mod errors;
 pub use errors::CheckpwnError;
 use std::{thread, time};
 
-/// The checkpwn UserAgents sent to HIBP.
+/// The checkpwn UserAgent sent to HIBP.
 pub const CHECKPWN_USER_AGENT: &str = "checkpwn - cargo utility tool for hibp";
 
 /// Check account, on both account and paste databases, using a given API key.
 /// Before sending a request, the thread sleeps for 1600 millis. HIBP limits at 1500.
-/// Returns Ok(bool), indicating whether the account is breached or not.
+/// Returns Ok(bool), `bool` indicating whether the account is breached or not.
 /// Err() is returned if an error occurred during the check.
 pub fn check_account(account: &str, api_key: &str) -> Result<bool, CheckpwnError> {
     if account.is_empty() || api_key.is_empty() {
@@ -75,7 +83,7 @@ pub fn check_account(account: &str, api_key: &str) -> Result<bool, CheckpwnError
 }
 
 /// `Password` is a wrapper type for a password that is checked at HIBP.
-/// It contains a opaque `Debug` impl, to avoid the SHA1 of the password to leak into logs.
+/// It contains an opaque `Debug` impl, to avoid the SHA1 hash of the password to leak.
 pub struct Password {
     hash: String,
 }
@@ -107,7 +115,7 @@ impl Drop for Password {
 }
 
 /// Check password.
-/// Returns Ok(bool), indicating whether the password is breached or not.
+/// Returns Ok(bool), `bool` indicating whether the password is breached or not.
 /// Err() is returned if an error occurred during the check.
 pub fn check_password(password: &Password) -> Result<bool, CheckpwnError> {
     let pass_db_api_route = api::arg_to_api_route(&api::CheckableChoices::PASS, &password.hash);
