@@ -147,6 +147,7 @@ fn test_empty_input_errors() {
     assert!(Password::new("").is_err());
 }
 
+#[cfg(test)]
 #[cfg(feature = "ci_test")]
 fn get_env_api_key_from_ci() -> String {
     // If in CI, the key is in env.
