@@ -1,0 +1,21 @@
+[package]
+name = "checkpwn_lib"
+version = "0.1.0"
+authors = ["brycx <brycx@protonmail.com>"]
+description = ""
+keywords = [  ]
+categories = [  ]
+readme = "README.md"
+edition = "2018"
+repository = "https://github.com/brycx/checkpwn-lib"
+license = "MIT"
+
+[dependencies]
+sha-1 = { version = "0.9.1", default-features = false }
+hex = "0.4.2"
+ureq = { version = "1.4.1", default-features = false, features = ["tls"] }
+zeroize = "1.1.1"
+
+
+[features]
+ci_test = []
