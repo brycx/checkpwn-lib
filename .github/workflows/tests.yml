@@ -6,7 +6,7 @@ on:
   # Test only pushes to master branch
   push:
     branches:
-      - master
+      - main
   schedule:
     - cron: '0 0 * * 0' # Midnight of each sunday
 
