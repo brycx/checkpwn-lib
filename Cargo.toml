@@ -13,7 +13,7 @@ license = "MIT"
 [dependencies]
 sha-1 = { version = "0.9.1", default-features = false }
 hex = "0.4.2"
-ureq = { version = "1.5.1", default-features = false, features = ["tls"] }
+ureq = { version = "2.0.0", default-features = false, features = ["tls"] }
 zeroize = "1.1.1"
 
 [features]
