@@ -67,19 +67,26 @@ pub fn check_account(account: &str, api_key: &str) -> Result<bool, CheckpwnError
     let acc_db_api_route = api::arg_to_api_route(&api::CheckableChoices::ACC, account);
     let paste_db_api_route = api::arg_to_api_route(&api::CheckableChoices::PASTE, account);
 
-    let acc_stat = ureq::get(&acc_db_api_route)
+    let agent: ureq::Agent = ureq::AgentBuilder::new()
+        .timeout_connect(time::Duration::from_secs(10))
+        .build();
+
+    let acc_stat = agent
+        .get(&acc_db_api_route)
         .set("User-Agent", CHECKPWN_USER_AGENT)
         .set("hibp-api-key", api_key)
-        .timeout_connect(10_000)
         .call();
 
-    let paste_stat = ureq::get(&paste_db_api_route)
+    let paste_stat = agent
+        .get(&paste_db_api_route)
         .set("User-Agent", CHECKPWN_USER_AGENT)
         .set("hibp-api-key", api_key)
-        .timeout_connect(10_000)
         .call();
 
-    api::evaluate_acc_breach_statuscodes(acc_stat.status(), paste_stat.status())
+    api::evaluate_acc_breach_statuscodes(
+        api::response_to_status_codes(&acc_stat)?,
+        api::response_to_status_codes(&paste_stat)?,
+    )
 }
 
 /// `Password` is a wrapper type for a password that is checked at HIBP.
@@ -120,13 +127,20 @@ impl Drop for Password {
 pub fn check_password(password: &Password) -> Result<bool, CheckpwnError> {
     let pass_db_api_route = api::arg_to_api_route(&api::CheckableChoices::PASS, &password.hash);
 
-    let pass_stat = ureq::get(&pass_db_api_route)
+    let agent: ureq::Agent = ureq::AgentBuilder::new()
+        .timeout_connect(time::Duration::from_secs(10))
+        .build();
+
+    let pass_stat = agent
+        .get(&pass_db_api_route)
         .set("User-Agent", CHECKPWN_USER_AGENT)
         .set("Add-Padding", "true")
-        .timeout_connect(10_000)
         .call();
-    let request_status = pass_stat.status();
-    let pass_body: String = pass_stat.into_string().unwrap();
+
+    let request_status = api::response_to_status_codes(&pass_stat)?;
+    // An error here that would abort the check will be returned already from the above
+    // so unwrap() here should be fine
+    let pass_body: String = pass_stat.unwrap().into_string().unwrap();
 
     if api::search_in_range(&pass_body, &password.hash) {
         if request_status == 200 {

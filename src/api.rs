@@ -81,6 +81,17 @@ pub fn search_in_range(password_range_response: &str, hashed_key: &str) -> bool 
     false
 }
 
+/// Match a Responses errors to codes and results that checkpwn can use.
+pub fn response_to_status_codes(
+    response: &Result<ureq::Response, ureq::Error>,
+) -> Result<u16, CheckpwnError> {
+    match response {
+        Ok(resp) => Ok(resp.status()),
+        Err(ureq::Error::Status(code, _)) => Ok(*code),
+        Err(_) => Err(CheckpwnError::Network),
+    }
+}
+
 pub fn evaluate_acc_breach_statuscodes(
     acc_stat: u16,
     paste_stat: u16,
