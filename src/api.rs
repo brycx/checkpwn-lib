@@ -24,22 +24,22 @@ use crate::errors::CheckpwnError;
 use sha1::{Digest, Sha1};
 
 pub enum CheckableChoices {
-    ACC,
-    PASS,
-    PASTE,
+    Acc,
+    Pass,
+    Paste,
 }
 
 impl CheckableChoices {
     fn get_api_route(&self, search_term: &str) -> String {
         match self {
-            CheckableChoices::ACC => format!(
+            CheckableChoices::Acc => format!(
                 "https://haveibeenpwned.com/api/v3/breachedaccount/{}",
                 search_term
             ),
-            CheckableChoices::PASS => {
+            CheckableChoices::Pass => {
                 format!("https://api.pwnedpasswords.com/range/{}", search_term)
             }
-            CheckableChoices::PASTE => format!(
+            CheckableChoices::Paste => format!(
                 "https://haveibeenpwned.com/api/v3/pasteaccount/{}",
                 search_term
             ),
@@ -51,7 +51,7 @@ impl CheckableChoices {
 /// If the `pass` argument has been selected, `input_data` needs to be the hashed password.
 pub fn arg_to_api_route(arg: &CheckableChoices, input_data: &str) -> String {
     match arg {
-        CheckableChoices::PASS => arg.get_api_route(
+        CheckableChoices::Pass => arg.get_api_route(
             // Only send the first 5 chars to the password range API
             &input_data[..5],
         ),
@@ -132,24 +132,24 @@ fn test_sha1() {
 #[test]
 fn test_make_req_and_arg_to_route() {
     // API paths taken from https://haveibeenpwned.com/API/v3
-    let path = CheckableChoices::ACC.get_api_route("test@example.com");
+    let path = CheckableChoices::Acc.get_api_route("test@example.com");
     assert_eq!(
         path,
         "https://haveibeenpwned.com/api/v3/breachedaccount/test@example.com"
     );
     assert_eq!(
         "https://api.pwnedpasswords.com/range/B1B37",
-        arg_to_api_route(&CheckableChoices::PASS, &hash_password("qwerty"))
+        arg_to_api_route(&CheckableChoices::Pass, &hash_password("qwerty"))
     );
     assert_eq!(
         "https://haveibeenpwned.com/api/v3/pasteaccount/test@example.com",
-        arg_to_api_route(&CheckableChoices::PASTE, "test@example.com")
+        arg_to_api_route(&CheckableChoices::Paste, "test@example.com")
     );
 }
 
 #[test]
 fn test_good_argument() {
-    let option_arg = CheckableChoices::ACC;
+    let option_arg = CheckableChoices::Acc;
     let data_search = String::from("test@example.com");
 
     arg_to_api_route(&option_arg, &data_search);

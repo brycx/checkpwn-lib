@@ -64,8 +64,8 @@ pub fn check_account(account: &str, api_key: &str) -> Result<bool, CheckpwnError
     // HIBP limits requests to one per 1500 milliseconds. We're allowing for 1600 below as a buffer.
     thread::sleep(time::Duration::from_millis(1600));
 
-    let acc_db_api_route = api::arg_to_api_route(&api::CheckableChoices::ACC, account);
-    let paste_db_api_route = api::arg_to_api_route(&api::CheckableChoices::PASTE, account);
+    let acc_db_api_route = api::arg_to_api_route(&api::CheckableChoices::Acc, account);
+    let paste_db_api_route = api::arg_to_api_route(&api::CheckableChoices::Paste, account);
 
     let agent: ureq::Agent = ureq::AgentBuilder::new()
         .timeout_connect(time::Duration::from_secs(10))
@@ -125,7 +125,7 @@ impl Drop for Password {
 /// Returns Ok(bool), `bool` indicating whether the password is breached or not.
 /// Err() is returned if an error occurred during the check.
 pub fn check_password(password: &Password) -> Result<bool, CheckpwnError> {
-    let pass_db_api_route = api::arg_to_api_route(&api::CheckableChoices::PASS, &password.hash);
+    let pass_db_api_route = api::arg_to_api_route(&api::CheckableChoices::Pass, &password.hash);
 
     let agent: ureq::Agent = ureq::AgentBuilder::new()
         .timeout_connect(time::Duration::from_secs(10))
