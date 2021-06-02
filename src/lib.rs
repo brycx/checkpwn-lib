@@ -41,7 +41,7 @@
     unused_qualifications,
     overflowing_literals
 )]
-#![doc(html_root_url = "https://docs.rs/checkpwn_lib/0.1.0")]
+#![doc(html_root_url = "https://docs.rs/checkpwn_lib/0.2.0")]
 
 mod api;
 mod errors;
