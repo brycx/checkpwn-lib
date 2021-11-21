@@ -172,13 +172,26 @@ fn get_env_api_key_from_ci() -> String {
 #[cfg(feature = "ci_test")]
 #[test]
 fn test_check_account() {
+    use rand::prelude::*;
+
+    let mut rng = rand::thread_rng();
+    let mut email_user: [char; 8] = ['a'; char];
+    let mut email_domain: [char; 8] = ['a'; char];
+    rng.fill(&mut email_user);
+    rng.fill(&mut email_domain);
+
+    email_user.iter().collect::<Vec<&str>>();
+
+    let rnd_email = format!(
+        "{:?}@{:?}.com",
+        email_user.iter().collect::<Vec<&str>>(),
+        email_domain.iter().collect::<Vec<&str>>()
+    );
+
     let api_key = get_env_api_key_from_ci();
 
     assert_eq!(check_account("test@example.com", &api_key).unwrap(), true);
-    assert_eq!(
-        check_account("fsrEos7s@wZ3zdGxr.com", &api_key).unwrap(),
-        false
-    );
+    assert_eq!(check_account(&rnd_email, &api_key).unwrap(), false);
 }
 
 #[test]
