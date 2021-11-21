@@ -12,6 +12,9 @@ on:
 
 name: Tests
 
+permissions:
+  contents: read
+
 jobs:
   tests:
     name: Test Suite
@@ -25,6 +28,8 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
+        with:
+          persist-credentials: false
 
       - name: Install toolchain
         uses: actions-rs/toolchain@v1

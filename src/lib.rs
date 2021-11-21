@@ -174,18 +174,16 @@ fn get_env_api_key_from_ci() -> String {
 fn test_check_account() {
     use rand::prelude::*;
 
-    let mut rng = rand::thread_rng();
-    let mut email_user: [char; 8] = ['a'; char];
-    let mut email_domain: [char; 8] = ['a'; char];
+    let mut rng = thread_rng();
+    let mut email_user: [char; 8] = ['a'; 8];
+    let mut email_domain: [char; 8] = ['a'; 8];
     rng.fill(&mut email_user);
     rng.fill(&mut email_domain);
 
-    email_user.iter().collect::<Vec<&str>>();
-
     let rnd_email = format!(
         "{:?}@{:?}.com",
-        email_user.iter().collect::<Vec<&str>>(),
-        email_domain.iter().collect::<Vec<&str>>()
+        email_user.iter().collect::<String>(),
+        email_domain.iter().collect::<String>()
     );
 
     let api_key = get_env_api_key_from_ci();
