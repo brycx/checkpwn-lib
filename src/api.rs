@@ -188,8 +188,8 @@ fn test_search_success_and_failure() {
 
     let hashed_password = hash_password("qwerty");
 
-    assert_eq!(search_in_range(&contains_pass, &hashed_password), true);
-    assert_eq!(search_in_range(&no_pass, &hashed_password), false);
+    assert!(search_in_range(&contains_pass, &hashed_password));
+    assert!(!search_in_range(&no_pass, &hashed_password));
 }
 
 #[test]
@@ -201,12 +201,12 @@ fn test_evaluate_breach_good() {
     let notfound_badrequest = evaluate_acc_breach_statuscodes(404, 400).unwrap();
     let notfound_notfound = evaluate_acc_breach_statuscodes(404, 404).unwrap();
 
-    assert_eq!(ok_ok, true);
-    assert_eq!(ok_notfound, true);
-    assert_eq!(notfound_ok, true);
-    assert_eq!(ok_badrequest, true);
-    assert_eq!(notfound_badrequest, false);
-    assert_eq!(notfound_notfound, false);
+    assert!(ok_ok);
+    assert!(ok_notfound);
+    assert!(notfound_ok);
+    assert!(ok_badrequest);
+    assert!(!notfound_badrequest);
+    assert!(!notfound_notfound);
 
     assert!(evaluate_acc_breach_statuscodes(400, 400).is_err()); // _badrequest_badrequest
     assert!(evaluate_acc_breach_statuscodes(400, 404).is_err()); // _badrequest_notfound

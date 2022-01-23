@@ -188,8 +188,8 @@ fn test_check_account() {
 
     let api_key = get_env_api_key_from_ci();
 
-    assert_eq!(check_account("test@example.com", &api_key).unwrap(), true);
-    assert_eq!(check_account(&rnd_email, &api_key).unwrap(), false);
+    assert!(check_account("test@example.com", &api_key).unwrap());
+    assert!(!check_account(&rnd_email, &api_key).unwrap());
 }
 
 #[test]
@@ -197,6 +197,6 @@ fn test_check_password() {
     let breached_password = Password::new("qwerty").unwrap();
     let non_breached_password = Password::new("dHRUKbDaKgIobOtX").unwrap();
 
-    assert_eq!(check_password(&breached_password).unwrap(), true);
-    assert_eq!(check_password(&non_breached_password).unwrap(), false);
+    assert!(check_password(&breached_password).unwrap());
+    assert!(!check_password(&non_breached_password).unwrap());
 }
