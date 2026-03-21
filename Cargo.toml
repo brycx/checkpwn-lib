@@ -1,23 +1,23 @@
 [package]
 name = "checkpwn_lib"
-version = "0.2.1" # Update html_root_url in lib.rs along with this.
+version = "0.3.0"
 authors = ["brycx <brycx@protonmail.com>"]
 description = "Library to interact with the HIBP API"
 keywords = [ "password", "breaches", "HIBP", "security" ]
 categories = [ "cryptography" ]
 readme = "README.md"
-edition = "2018"
+edition = "2024"
 repository = "https://github.com/brycx/checkpwn-lib"
 license = "MIT"
 
 [dependencies]
 sha-1 = { version = "0.10.0", default-features = false }
 hex = "0.4.2"
-ureq = { version = "2.4.0", default-features = false, features = ["tls"] }
-zeroize = "1.5.0"
+ureq = "3"
+zeroize = "1"
 
 [dev-dependencies]
-rand = "0.8.4"
+rand = "0.10"
 
 [features]
 ci_test = []

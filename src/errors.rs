@@ -1,6 +1,6 @@
 // MIT License
 
-// Copyright (c) 2020-2022 brycx
+// Copyright (c) 2020-2026 brycx
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,19 +23,19 @@
 /// Errors related to checking passwords and accounts.
 #[derive(Clone, Copy, PartialEq)]
 pub enum CheckpwnError {
-    ///
+    /// StatusCode.
     StatusCode,
-    ///
+    /// Network.
     Network,
-    ///
+    /// Decoding.
     Decoding,
-    ///
+    /// BadResponse.
     BadResponse,
-    ///
+    /// InvalidApiKey.
     InvalidApiKey,
-    ///
+    /// MissingApiKey.
     MissingApiKey,
-    ///
+    /// EmptyInput.
     EmptyInput,
 }
 
