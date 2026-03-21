@@ -173,19 +173,14 @@ fn get_env_api_key_from_ci() -> String {
 #[cfg(feature = "ci_test")]
 #[test]
 fn test_check_account() {
-    use rand::prelude::*;
+    use rand::RngExt;
+    use rand::distr::Alphanumeric;
 
-    let mut rng = thread_rng();
-    let mut email_user: [char; 8] = ['a'; 8];
-    let mut email_domain: [char; 8] = ['a'; 8];
-    rng.fill(&mut email_user);
-    rng.fill(&mut email_domain);
+    let mut rng = rand::rng();
+    let email_user: String = (0..8).map(|_| rng.sample(Alphanumeric) as char).collect();
+    let email_domain: String = (0..8).map(|_| rng.sample(Alphanumeric) as char).collect();
 
-    let rnd_email = format!(
-        "{:?}@{:?}.com",
-        email_user.iter().collect::<String>(),
-        email_domain.iter().collect::<String>()
-    );
+    let rnd_email = format!("{:?}@{:?}.com", email_user, email_domain);
 
     let api_key = get_env_api_key_from_ci();
 
