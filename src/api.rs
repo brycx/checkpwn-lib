@@ -1,6 +1,6 @@
 // MIT License
 
-// Copyright (c) 2020-2022 brycx
+// Copyright (c) 2020-2026 brycx
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,7 @@
 
 use crate::errors::CheckpwnError;
 use sha1::{Digest, Sha1};
+use ureq::Body;
 
 pub enum CheckableChoices {
     Acc,
@@ -73,7 +74,7 @@ pub fn search_in_range(password_range_response: &str, hashed_key: &str) -> bool 
         // All hashes here have a length of 35, so the useless gets dropped by
         // slicing. Don't include first five characters of own password, as
         // this also is how the HIBP API returns passwords.
-        if *pair.get(0).unwrap() == &hashed_key[5..] {
+        if *pair.first().unwrap() == &hashed_key[5..] {
             return true;
         }
     }
@@ -83,11 +84,11 @@ pub fn search_in_range(password_range_response: &str, hashed_key: &str) -> bool 
 
 /// Match a Responses errors to codes and results that checkpwn can use.
 pub fn response_to_status_codes(
-    response: &Result<ureq::Response, ureq::Error>,
+    response: &Result<ureq::http::Response<Body>, ureq::Error>,
 ) -> Result<u16, CheckpwnError> {
     match response {
-        Ok(resp) => Ok(resp.status()),
-        Err(ureq::Error::Status(code, _)) => Ok(*code),
+        Ok(resp) => Ok(resp.status().as_u16()),
+        Err(ureq::Error::StatusCode(code)) => Ok(*code),
         Err(_) => Err(CheckpwnError::Network),
     }
 }

@@ -1,6 +1,6 @@
 // MIT License
 
-// Copyright (c) 2020-2022 brycx
+// Copyright (c) 2020-2026 brycx
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,6 @@
     unused_qualifications,
     overflowing_literals
 )]
-#![doc(html_root_url = "https://docs.rs/checkpwn_lib/0.2.1")]
 
 mod api;
 mod errors;
@@ -67,20 +66,21 @@ pub fn check_account(account: &str, api_key: &str) -> Result<bool, CheckpwnError
     let acc_db_api_route = api::arg_to_api_route(&api::CheckableChoices::Acc, account);
     let paste_db_api_route = api::arg_to_api_route(&api::CheckableChoices::Paste, account);
 
-    let agent: ureq::Agent = ureq::AgentBuilder::new()
-        .timeout_connect(time::Duration::from_secs(10))
+    let agent_config = ureq::Agent::config_builder()
+        .timeout_global(Some(time::Duration::from_secs(10)))
         .build();
+    let agent: ureq::Agent = agent_config.into();
 
     let acc_stat = agent
         .get(&acc_db_api_route)
-        .set("User-Agent", CHECKPWN_USER_AGENT)
-        .set("hibp-api-key", api_key)
+        .header("User-Agent", CHECKPWN_USER_AGENT)
+        .header("hibp-api-key", api_key)
         .call();
 
     let paste_stat = agent
         .get(&paste_db_api_route)
-        .set("User-Agent", CHECKPWN_USER_AGENT)
-        .set("hibp-api-key", api_key)
+        .header("User-Agent", CHECKPWN_USER_AGENT)
+        .header("hibp-api-key", api_key)
         .call();
 
     api::evaluate_acc_breach_statuscodes(
@@ -127,20 +127,21 @@ impl Drop for Password {
 pub fn check_password(password: &Password) -> Result<bool, CheckpwnError> {
     let pass_db_api_route = api::arg_to_api_route(&api::CheckableChoices::Pass, &password.hash);
 
-    let agent: ureq::Agent = ureq::AgentBuilder::new()
-        .timeout_connect(time::Duration::from_secs(10))
+    let agent_config = ureq::Agent::config_builder()
+        .timeout_global(Some(time::Duration::from_secs(10)))
         .build();
+    let agent: ureq::Agent = agent_config.into();
 
     let pass_stat = agent
         .get(&pass_db_api_route)
-        .set("User-Agent", CHECKPWN_USER_AGENT)
-        .set("Add-Padding", "true")
+        .header("User-Agent", CHECKPWN_USER_AGENT)
+        .header("Add-Padding", "true")
         .call();
 
     let request_status = api::response_to_status_codes(&pass_stat)?;
     // An error here that would abort the check will be returned already from the above
     // so unwrap() here should be fine
-    let pass_body: String = pass_stat.unwrap().into_string().unwrap();
+    let pass_body: String = pass_stat.unwrap().into_body().read_to_string().unwrap();
 
     if api::search_in_range(&pass_body, &password.hash) {
         if request_status == 200 {
@@ -172,19 +173,14 @@ fn get_env_api_key_from_ci() -> String {
 #[cfg(feature = "ci_test")]
 #[test]
 fn test_check_account() {
-    use rand::prelude::*;
+    use rand::RngExt;
+    use rand::distr::Alphanumeric;
 
-    let mut rng = thread_rng();
-    let mut email_user: [char; 8] = ['a'; 8];
-    let mut email_domain: [char; 8] = ['a'; 8];
-    rng.fill(&mut email_user);
-    rng.fill(&mut email_domain);
+    let mut rng = rand::rng();
+    let email_user: String = (0..8).map(|_| rng.sample(Alphanumeric) as char).collect();
+    let email_domain: String = (0..8).map(|_| rng.sample(Alphanumeric) as char).collect();
 
-    let rnd_email = format!(
-        "{:?}@{:?}.com",
-        email_user.iter().collect::<String>(),
-        email_domain.iter().collect::<String>()
-    );
+    let rnd_email = format!("{:?}@{:?}.com", email_user, email_domain);
 
     let api_key = get_env_api_key_from_ci();
 
