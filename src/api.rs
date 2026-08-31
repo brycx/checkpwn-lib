@@ -143,7 +143,7 @@ fn test_make_req_and_arg_to_route() {
         arg_to_api_route(&CheckableChoices::Pass, &hash_password("qwerty"))
     );
     assert_eq!(
-        "https://haveibeenpwned.com/api/v3/pasteAaccount/test@example.com",
+        "https://haveibeenpwned.com/api/v3/pasteAccount/test@example.com",
         arg_to_api_route(&CheckableChoices::Paste, "test@example.com")
     );
 }
