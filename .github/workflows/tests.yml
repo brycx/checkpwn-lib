@@ -10,6 +10,11 @@ on:
   schedule:
     - cron: '0 0 * * 0' # Midnight of each sunday
 
+# We don't need to run older workflows for the same PR's, since we always want the output of the newest ones.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 name: Tests
 
 permissions:
@@ -27,20 +32,19 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.rust }}
-          override: true
+        env: 
+          TARGET_TOOLCHAIN: ${{ matrix.rust }}
+        run: rustup toolchain install "${TARGET_TOOLCHAIN}"
+        shell: bash
+
       - name: Run cargo test
         env:
-          API_KEY: ${{secrets.HIBP_TEST_KEY}}
-        uses: actions-rs/cargo@v1
+          API_KEY: 00000000000000000000000000000000
         with:
           command: test
           args: --features ci_test

@@ -10,26 +10,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
+      - name: Install toolchain
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
+          persist-credentials: false
+
+      - name: Install toolchain
+        run: rustup toolchain install stable && rustup component add rustfmt && rustup component add clippy
 
       - name: Run cargo fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: cargo fmt --all -- --check
 
       - name: Run cargo clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: -- -D warnings
+        run: cargo clippy --all-features -- -D warnings
+
+      - name: Run cargo clippy on tests
+        run: cargo clippy --all-features --tests -- -D warnings
