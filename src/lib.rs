@@ -173,19 +173,23 @@ fn get_env_api_key_from_ci() -> String {
 #[cfg(feature = "ci_test")]
 #[test]
 fn test_check_account() {
-    use rand::RngExt;
-    use rand::distr::Alphanumeric;
-
-    let mut rng = rand::rng();
-    let email_user: String = (0..8).map(|_| rng.sample(Alphanumeric) as char).collect();
-    let email_domain: String = (0..8).map(|_| rng.sample(Alphanumeric) as char).collect();
-
-    let rnd_email = format!("{:?}@{:?}.com", email_user, email_domain);
-
     let api_key = get_env_api_key_from_ci();
 
-    assert!(check_account("test@example.com", &api_key).unwrap());
-    assert!(!check_account(&rnd_email, &api_key).unwrap());
+    // https://haveibeenpwned.com/API/v3#TestAPIKey
+    assert!(check_account("account-exists@hibp-integration-tests.com", &api_key).unwrap());
+    assert!(check_account("not-active-breach@hibp-integration-tests.com", &api_key).unwrap());
+    assert!(!check_account("opt-out@hibp-integration-tests.com", &api_key).unwrap());
+    assert!(!check_account("opt-out-breach@hibp-integration-tests.com", &api_key).unwrap());
+    assert!(
+        check_account(
+            "paste-sensitive-breach@hibp-integration-tests.com",
+            &api_key
+        )
+        .unwrap()
+    );
+    assert!(check_account("spam-list-only@hibp-integration-tests.com", &api_key).unwrap());
+    assert!(check_account("spam-list-and-others@hibp-integration-tests.com", &api_key).unwrap());
+    assert!(check_account("stealer-log@hibp-integration-tests.com", &api_key).unwrap());
 }
 
 #[test]

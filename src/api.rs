@@ -34,14 +34,14 @@ impl CheckableChoices {
     fn get_api_route(&self, search_term: &str) -> String {
         match self {
             CheckableChoices::Acc => format!(
-                "https://haveibeenpwned.com/api/v3/breachedaccount/{}",
+                "https://haveibeenpwned.com/api/v3/breachedAccount/{}",
                 search_term
             ),
             CheckableChoices::Pass => {
                 format!("https://api.pwnedpasswords.com/range/{}", search_term)
             }
             CheckableChoices::Paste => format!(
-                "https://haveibeenpwned.com/api/v3/pasteaccount/{}",
+                "https://haveibeenpwned.com/api/v3/pasteAccount/{}",
                 search_term
             ),
         }
@@ -136,14 +136,14 @@ fn test_make_req_and_arg_to_route() {
     let path = CheckableChoices::Acc.get_api_route("test@example.com");
     assert_eq!(
         path,
-        "https://haveibeenpwned.com/api/v3/breachedaccount/test@example.com"
+        "https://haveibeenpwned.com/api/v3/breachedAccount/test@example.com"
     );
     assert_eq!(
         "https://api.pwnedpasswords.com/range/B1B37",
         arg_to_api_route(&CheckableChoices::Pass, &hash_password("qwerty"))
     );
     assert_eq!(
-        "https://haveibeenpwned.com/api/v3/pasteaccount/test@example.com",
+        "https://haveibeenpwned.com/api/v3/pasteAaccount/test@example.com",
         arg_to_api_route(&CheckableChoices::Paste, "test@example.com")
     );
 }
